@@ -1,7 +1,7 @@
 # Zhuhai_Transit_Accessibility
 
 ## Objective
-The main objective of this study is to caculate and visulaize transit accessbility measures using Hansen type (citation needed) definitions for the city of Zhuhai.
+The main objective of this study is to calculate and visualize transit accessibility measures using Hansen type (citation needed) definitions for the city of Zhuhai.
 
 ## Why transit accessibility matters.
 
