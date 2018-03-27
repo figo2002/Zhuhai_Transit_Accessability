@@ -1,0 +1,7 @@
+area["name:en"="Zhuhai City"]->.boundaryarea;
+(
+node(area.boundaryarea)[highway="bus_stop"];
+way(area.boundaryarea)[highway="bus_stop"];>;
+rel(area.boundaryarea)[highway="bus_stop"];>;
+);
+out body;
