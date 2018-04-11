@@ -66,9 +66,12 @@ simple_stops=gCentroid(coupled_polygon,byid=TRUE)
 simple_stops <- SpatialPointsDataFrame(simple_stops,good_stops)
 #####################################################################
 #write  out stops.txt
+stop_ouput <- as.data.frame(simple_stops)
+stop_ouput$stop_id <- seq(1,nrow(stop_ouput))
+stop_ouput <- stop_ouput[,c(5,2,4,3)]
+names(stop_ouput) <- c("stop_id","stop_name","stop_lat","stop_lon")
 
-
-
+write.csv()
 
 #####################################################################
 #for one single route, output the 
