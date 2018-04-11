@@ -1,0 +1,2 @@
+trip_id,route_id,service_id
+1001,101,0

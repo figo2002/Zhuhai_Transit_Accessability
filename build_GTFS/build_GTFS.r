@@ -2,6 +2,7 @@ rm(list=ls(all=TRUE))
 Sys.setlocale(locale="chinese")
 setwd('./data')
 #library(geojsonio)
+library(ropencc)
 library(spdplyr)
 library(jsonlite)
 library(leaflet)
@@ -33,6 +34,11 @@ noname_stops <- all_stops[is.na(all_stops$name),]
   
 named_stops <- all_stops[!is.na(all_stops$name),]
 
+ccts = converter(T2S)
+named_stops$name <- sapply(as.character(named_stops$name),function(x) {
+  ccts[x]
+})
+
 ################################################### 
 #filter out stops points with at most 4 spottings
 
@@ -58,6 +64,16 @@ coupled_polygon=SpatialPolygonsDataFrame(coupled_polygon,good_stops, match.ID = 
 simple_stops=gCentroid(coupled_polygon,byid=TRUE)
 
 simple_stops <- SpatialPointsDataFrame(simple_stops,good_stops)
+#####################################################################
+#write  out stops.txt
+
+
+
+
+#####################################################################
+#for one single route, output the 
+
+
 
 ######################################################################
 #visualize stops
