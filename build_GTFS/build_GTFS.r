@@ -98,9 +98,23 @@ setwd('../data')
 #write out trips.txt
 #first eliminate duplicate records
 
+trip_holder <- data.table(V1=character(),
+                          V2=character(),
+                          V3=character(),
+                          V5=character(),
+                          seq=integer(),
+                          arr=double(),
+                          dep=double())
+
+trip_holder$arr <- fastPOSIXct(trip_holder$arr,'UTC')
+trip_holder$dep <- fastPOSIXct(trip_holder$dep,'UTC')
 
 
-route_id=5
+for (i in routes_output$route_id)
+#for (i in c(1))
+{
+
+route_id=i
 route_name=routes_output[routes_output$route_id==route_id,]$route_short_name
 temp_dep <- arr_dep[V1==route_name]
 setkey(temp_dep,V2,time)
@@ -132,28 +146,43 @@ temp_dep$instance <- with(temp_dep,
 temp_dep <- temp_dep[inner_seq==1 |inner_seq==instance ]
 
 
+temp_faulty=temp_dep %>% group_by(seq) %>% mutate(value=paste(V4,collapse = "")) 
 
-temp_faulty=as.data.frame(tapply(temp_dep$V4,temp_dep$seq,FUN=paste, collapse = ""))
-names(temp_faulty) <- "value"
-temp_faulty[temp_faulty$value=="到站到站",]
 
-temp_dep[inner_seq==instance & inner_seq>1]$V4 <- "离站"
+temp_faulty_list <- unique(temp_faulty[temp_faulty$value=="到站到站",]$seq)
+temp_faulty_list1 <- unique(temp_faulty[temp_faulty$value=="离站离站",]$seq)
 
+
+
+temp_dep[(seq %in% temp_faulty_list) & inner_seq==instance & inner_seq>1]$V4 <- "离站"
+
+temp_dep[(seq %in% temp_faulty_list1) & inner_seq==1]$V4 <- "到站"
 
 temp_dep_stripped <- temp_dep[,c(seq(1,7))]
 
 temp_dep=temp_dep_stripped %>% spread(V4,time)
 
-tryCatch(temp_dep_stripped %>% spread(V4,time),error=c)
+#tryCatch(temp_dep_stripped %>% spread(V4,time),error=c)
 
 setkey(temp_dep,seq)
 
+names(temp_dep)[c(6,7)] <-c("arr","dep")
+
+temp_dep[is.na(arr),arr:=dep]
+temp_dep[is.na(dep),dep:=arr]
+
+
+
+
+trip_holder <- rbind(trip_holder,temp_dep)
+
+}
 
 #temp_dep <- temp_dep[order(seq)]
 
-temp_dep[c(seq(12832, 12833))]
+#temp_dep[c(seq(10458, 10459))]
 
-temp_dep[c(seq(16363, 16364))]
+#temp_dep[c(seq(16363, 16364))]
 
 #####################################################################
 #write out stop_times.txt
