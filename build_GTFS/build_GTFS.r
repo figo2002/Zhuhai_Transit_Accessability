@@ -183,9 +183,48 @@ trip_holder <- rbind(trip_holder,temp_dep)
 #temp_dep[c(seq(10458, 10459))]
 
 #temp_dep[c(seq(16363, 16364))]
+trip_holder[,diff:=dep-arr]
+trip_holder <- trip_holder[diff>=0]
+
+trip_holder[,CID:=paste0(V2,V3)]
+
+
+trip_holder$trip_id <- with(trip_holder,
+  rep(seq(length(rle(CID)$values)),rle(CID)$lengths)
+)
+
+routes_output <- as.data.table(routes_output)
+
+
+setkey(routes_output,route_short_name)
+setkey(trip_holder,V1)
+
+trip_data <- routes_output[trip_holder]
+
+setkey(trip_data,route_id,seq)
+
+trips_output <- trip_data[,c("trip_id","route_id")]
+
+trips_output[,service_id:=0]
+
+setkey(trips_output)
+trips_output <- unique(trips_output)
+
+setwd('../build_GTFS')
+cat("trip_id,route_id,service_id","\n",file="trips.txt")
+write.table(trips_output,file="trips.txt",sep = ",",row.names=FALSE,col.names=FALSE,append=TRUE,fileEncoding = "UTF-8")
+setwd('../data')
+
+
 
 #####################################################################
 #write out stop_times.txt
+
+# establish correspondence between archived stop name and osm stop names (ids)
+
+trip_data
+
+
 
 
 
