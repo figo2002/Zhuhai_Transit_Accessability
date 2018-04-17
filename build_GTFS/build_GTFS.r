@@ -222,10 +222,20 @@ setwd('../data')
 
 # establish correspondence between archived stop name and osm stop names (ids)
 
-trip_data
 
 
+record_name <- data.table(id=seq(1,length(unique(trip_data$V5))),stopname=unique(trip_data$V5))
 
+record_name[,match1:='']
+record_name[,match2:='']
+
+for (i in 1:nrow(record_name))
+{
+  record_name[i,3]=stop_names[amatch(record_name[i,2],stop_names$name,method='jw',maxDist=0.3),2]
+  record_name[i,4]=stop_names[amatch(record_name[i,2],stop_names$name,method='jw',maxDist=0.01),2]
+}
+
+sum(!is.na(record_name$match2))
 
 
 
