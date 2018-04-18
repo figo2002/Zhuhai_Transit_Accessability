@@ -228,14 +228,26 @@ record_name <- data.table(id=seq(1,length(unique(trip_data$V5))),stopname=unique
 
 record_name[,match1:='']
 record_name[,match2:='']
+record_name[,stop_id:=0]
 
 for (i in 1:nrow(record_name))
 {
-  record_name[i,3]=stop_names[amatch(record_name[i,2],stop_names$name,method='jw',maxDist=0.3),2]
-  record_name[i,4]=stop_names[amatch(record_name[i,2],stop_names$name,method='jw',maxDist=0.01),2]
+  record_name[i,3]=stop_output[amatch(record_name[i,2],stop_output$stop_name,method='jw',maxDist=0.3),2]
+  record_name[i,4]=stop_output[amatch(record_name[i,2],stop_output$stop_name,method='jw',maxDist=0.01),2]
+  record_name[i,5]=stop_output[amatch(record_name[i,2],stop_output$stop_name,method='jw',maxDist=0.01),1]
 }
 
-sum(!is.na(record_name$match2))
+
+
+valid_stops=record_name[!is.na(record_name$match2)]$match2
+
+stop_time_output <- trip_data[(V5 %in% valid_stops),]
+
+setkey(stop_time_output,trip_id,seq)
+
+#stop_time_output$stop_id <- 
+
+#sum(!is.na(record_name$match2))
 
 
 
