@@ -237,18 +237,34 @@ for (i in 1:nrow(record_name))
   record_name[i,5]=stop_output[amatch(record_name[i,2],stop_output$stop_name,method='jw',maxDist=0.01),1]
 }
 
+record_name_lkp <- record_name[!is.na(record_name$match2),c("match2","stop_id")]
 
+setkey(record_name_lkp,match2)
 
 valid_stops=record_name[!is.na(record_name$match2)]$match2
 
 stop_time_output <- trip_data[(V5 %in% valid_stops),]
 
+setkey(stop_time_output,V5)
+
+stop_time_output <- stop_time_output[record_name_lkp]
+
 setkey(stop_time_output,trip_id,seq)
 
-#stop_time_output$stop_id <- 
+stop_time_output$stop_sequence <- with(stop_time_output,
+                                       ave(seq_along(trip_id),trip_id,FUN=seq_along)
+                                           )
 
-#sum(!is.na(record_name$match2))
+stop_time_output[,arrival_time:=strftime(arr, format = "%H:%M:%S",tz="GMT")]
+stop_time_output[,departure_time:=strftime(dep, format = "%H:%M:%S",tz="GMT")]
 
+
+stop_time_output <- stop_time_output[,c("trip_id","arrival_time","departure_time","stop_id","stop_sequence")]
+
+setwd('../build_GTFS')
+cat("trip_id,arrival_time,departure_time,stop_id,stop_sequence","\n",file="stop_times.txt")
+write.table(stop_time_output,file="stop_times.txt",sep = ",",quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE,fileEncoding = "UTF-8")
+setwd('../data')
 
 
 ######################################################################
